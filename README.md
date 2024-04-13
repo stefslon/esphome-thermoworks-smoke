@@ -7,11 +7,11 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 - ESPHome capable microcontroller (e.g. ESP-12F D1 or ESP8266)
 
 ### Steps:
-- Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there)
-- Find RADIO_ID - this is the tricky part and will require some trial and error, use [NRF24_Sniffer](https://github.com/Yveaux/NRF24_Sniffer) what ID your Thermoworks unit is using 
+- Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
+- Find RADIO_ID - this is the tricky part and will require some trial and error, use [NRF24_Sniffer](https://github.com/Yveaux/NRF24_Sniffer) to find ID your Thermoworks unit is using 
 - Update Smoke_Receiver.h with the appropriate value
 - Copy Smoke_Receiver.h to /homeassistant/esphome
-- Create ESPHome integration (use esp-smoke.yaml for guidance)
+- Create ESPHome integration (use provided esp-smoke.yaml for guidance)
 - Setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
 ## Resources
