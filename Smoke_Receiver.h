@@ -1,4 +1,30 @@
-// Copy this file to /homeassistant/esphome
+/*
+MIT License
+
+Copyright (c) 2024 Stefan Slonevskiy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/*
+    Copy this file to /homeassistant/esphome
+*/
 
 #include "esphome.h"
 
@@ -6,14 +32,14 @@
 #include <RF24.h>
 #include <RF24_config.h>
 
-#define MAX_RF_PAYLOAD_SIZE            (21)
-#define PIPE                           (0)
+#define MAX_RF_PAYLOAD_SIZE    (21)
+#define PIPE                   (0)
 
-#define DEFAULT_RF_CHANNEL             (10)
-#define DEFAULT_RF_DATARATE            (RF24_250KBPS)
-#define DEFAULT_RF_ADDR_WIDTH          (5)
-#define DEFAULT_RADIO_ID               ((uint64_t)0x123456789ALL) /* Need to be set to whatever your unit's ID is */
-#define DEFAULT_RF_CRC_LENGTH          (2)
+#define RF_CHANNEL             (10)
+#define RF_DATARATE            (RF24_250KBPS)
+#define RF_ADDR_WIDTH          (5)
+#define RADIO_ID               ((uint64_t)0x123456789ALL) /* Need to be set to whatever your unit's ID is */
+#define RF_CRC_LENGTH          (2)
 
 typedef struct _data_t
 {
@@ -59,16 +85,16 @@ class Smoke_Receiver : public PollingComponent, public Sensor {
         radio.setAutoAck(false);
         radio.setRetries(0,0);
 
-        // Match MySensors' channel & datarate
-        radio.setChannel(DEFAULT_RF_CHANNEL);
-        radio.setDataRate((rf24_datarate_e)DEFAULT_RF_DATARATE);
+        // Match Smoke channel & datarate
+        radio.setChannel(RF_CHANNEL);
+        radio.setDataRate((rf24_datarate_e)RF_DATARATE);
 
         // Disable CRC & set fixed payload size to allow all packets captured to be returned by Nrf24.
         radio.setPayloadSize(MAX_RF_PAYLOAD_SIZE);
 
         // Configure listening pipe with the 'promiscuous' address and start listening
-        radio.setAddressWidth(DEFAULT_RF_ADDR_WIDTH);
-        radio.openReadingPipe(PIPE, DEFAULT_RADIO_ID);
+        radio.setAddressWidth(RF_ADDR_WIDTH);
+        radio.openReadingPipe(PIPE, RADIO_ID);
         radio.startListening();
 
         ESP_LOGI("esp-smoke","Setup executed, started listening...");
