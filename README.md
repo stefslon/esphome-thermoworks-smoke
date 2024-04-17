@@ -7,12 +7,12 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 - ESPHome capable microcontroller (e.g. ESP-12F D1 or ESP8266)
 
 ### Steps:
-- Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
-- Find RADIO_ID - this is the tricky part and will require some trial and error, use [NRF24_Sniffer](https://github.com/Yveaux/NRF24_Sniffer) to find ID your Thermoworks unit is using 
-- Update Smoke_Receiver.h with the appropriate value
-- Copy Smoke_Receiver.h to /homeassistant/esphome
-- Create ESPHome integration (use provided esp-smoke.yaml for guidance)
-- Setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
+1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
+2. Find RADIO_ID - this is the tricky part and will require some trial and error, use provided Smoke_NRF24_Address.ino Arduino sketch to scan for Smoke transmissions. You might want to try changing channels to 40 and 70. If valid transmission is found then address of that transmission along with decoded temperature data is printed out.
+3. Update Smoke_Receiver.h with the appropriate value
+4. Copy Smoke_Receiver.h to /homeassistant/esphome
+5. Create ESPHome integration (use provided esp-smoke.yaml for guidance)
+6. Setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
 ## Resources
 
