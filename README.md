@@ -14,6 +14,59 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 5. Create ESPHome integration (use provided esp-smoke.yaml for guidance)
 6. Setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
+## ApexCharts Example
+Below is an example of ApexCharts Card configuration
+
+```yaml
+type: custom:apexcharts-card
+graph_span: 4h
+header:
+  show: true
+  title: Smoke Temperature Last 1 Hour
+  show_states: true
+  colorize_states: true
+all_series_config:
+  stroke_width: 4
+apex_config:
+  dataLabels:
+    enabled: true
+yaxis:
+  - max: 300
+    min: 30
+    apex_config:
+      tickAmount: 9
+series:
+  - entity: sensor.esp_smoke_smoke_probe_1_min_alarm
+    stroke_width: 1.5
+    color: '#FA6057'
+    opacity: 0.5
+    curve: stepline
+  - entity: sensor.esp_smoke_smoke_probe_1_temperature
+    color: '#AD1007'
+  - entity: sensor.esp_smoke_smoke_probe_1_max_alarm
+    stroke_width: 1.5
+    color: '#FA6057'
+    opacity: 0.5
+    curve: stepline
+  - entity: sensor.esp_smoke_smoke_probe_2_min_alarm
+    stroke_width: 1.5
+    color: '#75FFAA'
+    opacity: 0.5
+    curve: stepline
+  - entity: sensor.esp_smoke_smoke_probe_2_temperature
+    color: '#15AD4F'
+  - entity: sensor.esp_smoke_smoke_probe_2_max_alarm
+    stroke_width: 1.5
+    color: '#75FFAA'
+    opacity: 0.5
+    curve: stepline
+```
+
+And the result looks something like this:
+![HA](https://github.com/stefslon/esphome-thermoworks-smoke/assets/2256156/e78d3913-6996-467f-bd00-7663fb4b56d3)
+
+
+
 ## Resources
 
 I found all these resources helpful in putting this together:
