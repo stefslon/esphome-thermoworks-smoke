@@ -19,10 +19,10 @@ Below is an example of ApexCharts Card configuration
 
 ```yaml
 type: custom:apexcharts-card
-graph_span: 4h
+graph_span: 8h
 header:
   show: true
-  title: Smoke Temperature Last 1 Hour
+  title: Smoke Temperature Last 8 Hour
   show_states: true
   colorize_states: true
 all_series_config:
