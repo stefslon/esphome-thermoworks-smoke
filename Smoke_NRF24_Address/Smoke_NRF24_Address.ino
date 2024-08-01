@@ -46,6 +46,9 @@ https://www.arduino.cc/reference/en/libraries/rf24/
 // Set up nRF24L01 radio on SPI bus plus CE/CS pins
 static RF24 radio(RF_CE_PIN, RF_CS_PIN);
 
+unsigned long channelTime;
+int currentChannel;
+
 typedef struct _data_t
 {
   int16_t probe1_temp;
@@ -98,7 +101,8 @@ void setup() {
   radio.setRetries(0,0);
 
   // Match Smoke channel & datarate
-  radio.setChannel(RF_CHANNEL);
+  currentChannel = 72;
+  radio.setChannel(currentChannel);
   radio.setDataRate((rf24_datarate_e)RF24_250KBPS);
   radio.setPALevel(3, true);
 
@@ -112,6 +116,8 @@ void setup() {
   radio.startListening();
 
   radio.printDetails();
+  
+  channelTime = millis();
 }
 
 void loop() {
@@ -121,6 +127,18 @@ void loop() {
   uint8_t addr_len = 5;
   data_t* tempData;
 
+  if ((millis()-channelTime) > 22000) {
+    //if (currentChannel==70) currentChannel = 10;
+    //if (currentChannel==40) currentChannel = 70;
+    //if (currentChannel==5) currentChannel = 40;
+    currentChannel--;
+    if (currentChannel>100) currentChannel = 0;
+    Serial.print("Switching frequency: ");
+    Serial.println(currentChannel);
+    radio.setChannel(currentChannel);
+    channelTime = millis();
+  }
+
   if (radio.available()) {
     uint8_t packetLen = radio.getPayloadSize();
 
@@ -129,35 +147,40 @@ void loop() {
 
     radio.read(&packet, packetLen);
 
-    // Read the given CRC
-    crc_given = ((uint16_t)(packet[payload_length + addr_len]) << 8) | (uint16_t)(packet[1 + payload_length + addr_len]);
+    for (uint8_t plen=3; plen <= 26; plen++) {
 
-    // Calculate the CRC
-    crc = crc16(packet,payload_length + addr_len);
+      // Read the given CRC
+      crc_given = ((uint16_t)(packet[plen]) << 8) | (uint16_t)(packet[1 + plen]);
 
-    if (crc == crc_given) {
-      Serial.print("Address: ");
-      dumpData(packet, addr_len);
-      Serial.print(" Data: ");
-      dumpData(packet+addr_len, payload_length);
-      Serial.println("");
+      // Calculate the CRC
+      crc = crc16(packet,plen);
 
-      tempData = (data_t*)(packet+addr_len);
-      Serial.print("     Probe 1: ");
-      Serial.print((double)tempData->probe1_temp/10.0);
-      Serial.print(" (alarm min: ");
-      Serial.print((double)tempData->probe1_min/10.0);
-      Serial.print(", max: ");
-      Serial.print((double)tempData->probe1_max/10.0);
-      Serial.println(")");
+      if (crc == crc_given) {
+        //Serial.print("Address: ");
+        //dumpData(packet, addr_len);
+        Serial.print(" Data: ");
+        dumpData(packet, plen);
+        Serial.println("");
 
-      Serial.print("     Probe 2: ");
-      Serial.print((double)tempData->probe2_temp/10.0);
-      Serial.print(" (alarm min: ");
-      Serial.print((double)tempData->probe2_min/10.0);
-      Serial.print(", max: ");
-      Serial.print((double)tempData->probe2_max/10.0);
-      Serial.println(")");
+        /*
+        tempData = (data_t*)(packet+addr_len);
+        Serial.print("     Probe 1: ");
+        Serial.print((double)tempData->probe1_temp/10.0);
+        Serial.print(" (alarm min: ");
+        Serial.print((double)tempData->probe1_min/10.0);
+        Serial.print(", max: ");
+        Serial.print((double)tempData->probe1_max/10.0);
+        Serial.println(")");
+
+        Serial.print("     Probe 2: ");
+        Serial.print((double)tempData->probe2_temp/10.0);
+        Serial.print(" (alarm min: ");
+        Serial.print((double)tempData->probe2_min/10.0);
+        Serial.print(", max: ");
+        Serial.print((double)tempData->probe2_max/10.0);
+        Serial.println(")");
+        */
+      }
     }
   }
 }
