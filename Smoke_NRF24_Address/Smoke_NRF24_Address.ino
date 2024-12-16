@@ -81,7 +81,7 @@ https://www.arduino.cc/reference/en/libraries/rf24/
 /// Must be 0xAA or 0x55 depending on the first bit of the address:
 /// - Use 0xAALL for addresses starting with 0
 /// - Use 0x55LL for addresses starting with 1
-/// @note Configure based on your address configuration
+/// @note Try both of these. Only one will find valid packets. This depends on the first bit of the address.
 /// @see https://travisgoodspeed.blogspot.com/2011/02/promiscuity-is-nrf24l01s-duty.html
 #define RADIO_ID ((uint64_t)0xAALL)
 
