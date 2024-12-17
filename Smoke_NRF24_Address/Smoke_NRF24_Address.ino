@@ -31,24 +31,76 @@ https://www.arduino.cc/reference/en/libraries/rf24/
 #include <RF24.h>
 #include <RF24_config.h>
 
-#define RF_CE_PIN       (D4)
-#define RF_CS_PIN       (D1)
+//------------------------------------------------------------------------------
+// REFERENCE DATA: Examples of valid vs invalid readings
+//------------------------------------------------------------------------------
+/// @note Valid data example:
+///   Address: 8F 43 3B 73 6F
+///   Data: 8F 43 3B 73 6F BD 01 2C 06 40 01 BF 01 54 0B 40 01 01 00 00 00 01 00 00 96 00
+///   Probe 1: 44.50°F (alarm min: 32.00, max: 158.00)
+///   Probe 2: 44.70°F (alarm min: 32.00, max: 290.00)
+/// @note False positive example:
+///   Address: 5A 98 95 55 59 (non consistent address)
+///   Data: 5A 98 95 55 59 49 65 F2 D4 DA AC B6 EA (short packet)
+///   Probe 1: 2592.90 (alarm min: -2128.60, max: -1102.20)
+///   Probe 2: -545.00 (alarm min: -2116.30, max: -1075.50)
 
-// Might want to try 10, 40, 70 if nothing is captured on 10
-#define RF_CHANNEL            (10)
+//------------------------------------------------------------------------------
+// SETUP INSTRUCTIONS
+//------------------------------------------------------------------------------
+/// When properly configured, this script should provide valid temperature
+/// readings every 15 seconds. The readings should be within normal temperature
+/// ranges as shown in the example above.
+///
+/// If you experience any of these issues:
+/// - No readings appearing every 15 seconds
+/// - Sporadic or missing data
+/// - Temperature readings outside normal ranges
+///
+/// Try adjusting the configuration settings below. The most common adjustments
+/// needed are:
+/// 1. Pin assignments (RF_CE_PIN and RF_CS_PIN)
+/// 2. Radio preamble (RADIO_ID)
+///
+/// @note Adjust all values in the CONFIGURATION section according to your setup
+
+
+//------------------------------------------------------------------------------
+// CONFIGURATION: These values need to be adjusted for your specific setup
+//------------------------------------------------------------------------------
+
+/// Pin number for the RF module's CE (Chip Enable) connection
+/// @note Adjust this to match your wiring
+#define RF_CE_PIN 4
+
+/// Pin number for the RF module's CS (Chip Select/VSPI SS) connection
+/// @note Adjust this to match your wiring
+#define RF_CS_PIN 5
+
+/// Radio preamble identifier
+/// Must be 0xAA or 0x55 depending on the first bit of the address:
+/// - Use 0xAALL for addresses starting with 0
+/// - Use 0x55LL for addresses starting with 1
+/// @note Try both of these. Only one will find valid packets. This depends on the first bit of the address.
+/// @see https://travisgoodspeed.blogspot.com/2011/02/promiscuity-is-nrf24l01s-duty.html
+#define RADIO_ID ((uint64_t)0xAALL)
+
+/// RF channel number for communication
+/// The device transmits on channels 10, 40, and 70 every 15 seconds.
+/// @note Try different channels (10, 40, or 70) if no data is received
+#define RF_CHANNEL 10
+
+//------------------------------------------------------------------------------
+// CONSTANTS: Do not modify these values
+//------------------------------------------------------------------------------
 
 #define RF_MAX_ADDR_WIDTH     (2)
 #define MAX_RF_PAYLOAD_SIZE   (28) /* 5 address + 21 payload + 2 CRC */
 #define SER_BAUDRATE          (115200)
 #define PIPE                  (0)
-#define RADIO_ID              ((uint64_t)0x55LL)
 
 // Set up nRF24L01 radio on SPI bus plus CE/CS pins
 static RF24 radio(RF_CE_PIN, RF_CS_PIN);
-
-unsigned long channelTime;
-int currentChannel;
-
 typedef struct _data_t
 {
   int16_t probe1_temp;
@@ -101,9 +153,8 @@ void setup() {
   radio.setRetries(0,0);
 
   // Match Smoke channel & datarate
-  currentChannel = 72;
-  radio.setChannel(currentChannel);
-  radio.setDataRate((rf24_datarate_e)RF24_250KBPS);
+  radio.setChannel(RF_CHANNEL);
+  radio.setDataRate(RF24_250KBPS);
   radio.setPALevel(3, true);
 
   // Disable CRC & set fixed payload size to allow all packets captured to be returned by Nrf24.
@@ -116,8 +167,7 @@ void setup() {
   radio.startListening();
 
   radio.printDetails();
-  
-  channelTime = millis();
+
 }
 
 void loop() {
@@ -126,18 +176,6 @@ void loop() {
   uint8_t payload_length = 21;
   uint8_t addr_len = 5;
   data_t* tempData;
-
-  if ((millis()-channelTime) > 22000) {
-    //if (currentChannel==70) currentChannel = 10;
-    //if (currentChannel==40) currentChannel = 70;
-    //if (currentChannel==5) currentChannel = 40;
-    currentChannel--;
-    if (currentChannel>100) currentChannel = 0;
-    Serial.print("Switching frequency: ");
-    Serial.println(currentChannel);
-    radio.setChannel(currentChannel);
-    channelTime = millis();
-  }
 
   if (radio.available()) {
     uint8_t packetLen = radio.getPayloadSize();
@@ -156,13 +194,14 @@ void loop() {
       crc = crc16(packet,plen);
 
       if (crc == crc_given) {
-        //Serial.print("Address: ");
-        //dumpData(packet, addr_len);
+        Serial.print("Address: ");
+        dumpData(packet, addr_len);
+        Serial.print("<- Note this address!>");
+        Serial.println("");
         Serial.print(" Data: ");
         dumpData(packet, plen);
         Serial.println("");
 
-        /*
         tempData = (data_t*)(packet+addr_len);
         Serial.print("     Probe 1: ");
         Serial.print((double)tempData->probe1_temp/10.0);
@@ -179,7 +218,7 @@ void loop() {
         Serial.print(", max: ");
         Serial.print((double)tempData->probe2_max/10.0);
         Serial.println(")");
-        */
+
       }
     }
   }
