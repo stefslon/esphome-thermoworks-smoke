@@ -8,10 +8,44 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 
 ### Steps:
 1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
-2. Create new ESPHome integration using provided esp-smoke.yaml as a template 
+![Wiring](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Wiring.png)
+2. Create new ESPHome integration using provided [esp-smoke.yaml](esp-smoke.yaml) as a template 
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/stefslon/esphome-thermoworks-smoke
+    components: [thermoworks_smoke]
+
+thermoworks_smoke:
+  id: thermoworks_smoke_receiver
+  rf_channel: 10
+  # -- when radio_id is not defined, unit goes into search mode
+  #    watch ESPHome log for potential matches. Do NOT put Smoke unit
+  #    into Connection/Pairing mode. Search may take up to 5 minutes.
+  #radio_id: 0x123456789A 
+  # -- if you are not able to find the unit, try uncommenting the line
+  #    below, your unit might have a different address pattern
+  #alt_radio_id: 1
+  ce_pin: D4
+  cs_pin: D1
+  probe1_temp_sensor:
+    name: "Smoke Probe 1 Temperature"
+  probe1_min_sensor:
+    name: "Smoke Probe 1 Min Alarm"
+  probe1_max_sensor:
+    name: "Smoke Probe 1 Max Alarm"
+  probe2_temp_sensor:
+    name: "Smoke Probe 2 Temperature"
+  probe2_min_sensor:
+    name: "Smoke Probe 2 Min Alarm"
+  probe2_max_sensor:
+    name: "Smoke Probe 2 Max Alarm"
+```
 3. If you already know your Smoke's `radio_id` then great, you can skip the next step 
 4. To find your Smoke's `radio_id` keep that field commented out, which will put your ESP device into search mode. Make sure Smoke is powered on and is NOT in pairing mode. Keep an eye on ESP's logs. In less than 5 minutes you should see an ID that was found. Verify that found temperatures match what you see on your device.
     - If ID is not found in five minutes try uncommenting `alt_radio_id` field and re-running the process again
+![ID Found](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Found.png)
 5. Set `radio_id` field to your Smoke's ID and you are all set!
 6. Optionally setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
@@ -64,7 +98,8 @@ series:
 ```
 
 And the result looks something like this:
-![HA](https://github.com/stefslon/esphome-thermoworks-smoke/assets/2256156/e78d3913-6996-467f-bd00-7663fb4b56d3)
+
+![HA](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/HA.png)
 
 
 
