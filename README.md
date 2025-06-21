@@ -7,8 +7,7 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 - ESPHome capable microcontroller (e.g. ESP-12F D1, ESP8266, or ESP32)
 
 ### Steps:
-1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
-![Wiring](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Wiring.png)
+1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Wiring.png) is one example take from this [website](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957))
 2. Create new ESPHome integration using provided [esp-smoke.yaml](esp-smoke.yaml) as a template 
 ```yaml
 external_components:
@@ -44,8 +43,8 @@ thermoworks_smoke:
 ```
 3. If you already know your Smoke's `radio_id` then great, you can skip the next step 
 4. To find your Smoke's `radio_id` keep that field commented out, which will put your ESP device into search mode. Make sure Smoke is powered on and is NOT in pairing mode. Keep an eye on ESP's logs. In less than 5 minutes you should see an ID that was found. Verify that found temperatures match what you see on your device.
-    - If ID is not found in five minutes try uncommenting `alt_radio_id` field and re-running the process again
 ![ID Found](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Found.png)
+    - If ID is not found in five minutes try uncommenting `alt_radio_id` field and re-running the process again
 5. Set `radio_id` field to your Smoke's ID and you are all set!
 6. Optionally setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
