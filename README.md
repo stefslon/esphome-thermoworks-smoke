@@ -4,15 +4,16 @@ These files provide ESPHome to Home Assitant integration of Thermoworks' [SmokeÂ
 
 ### You will need:
 - nRF24L01 Transceiver Module
-- ESPHome capable microcontroller (e.g. ESP-12F D1 or ESP8266)
+- ESPHome capable microcontroller (e.g. ESP-12F D1, ESP8266, or ESP32)
 
 ### Steps:
 1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957) is one example)
-2. Find RADIO_ID - this is the tricky part and will require some trial and error, use provided [Smoke_NRF24_Address.ino](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/Smoke_NRF24_Address/Smoke_NRF24_Address.ino) Arduino sketch to scan for Smoke transmissions. You might want to try changing channels to 40 and 70. If valid transmission is found then address of that transmission along with decoded temperature data is printed out.
-3. Update Smoke_Receiver.h with the appropriate values for your address as well as your pinouts.
-4. Copy Smoke_Receiver.h to /homeassistant/esphome
-5. Create ESPHome integration (use provided esp-smoke.yaml for guidance)
-6. Setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
+2. Create new ESPHome integration using provided esp-smoke.yaml as a template 
+3. If you already know your Smoke's `radio_id` then great, you can skip the next step 
+4. To find your Smoke's `radio_id` keep that field commented out, which will put your ESP device into search mode. Make sure Smoke is powered on and is NOT in pairing mode. Keep an eye on ESP's logs. In less than 5 minutes you should see an ID that was found. Verify that found temperatures match what you see on your device.
+    - If ID is not found in five minutes try uncommenting `alt_radio_id` field and re-running the process again
+5. Set `radio_id` field to your Smoke's ID and you are all set!
+6. Optionally setup dashboard in Home Assitant (I used [ApexCharts Card](https://github.com/RomRider/apexcharts-card) for graphs)
 
 ## ApexCharts Example
 Below is an example of ApexCharts Card configuration
