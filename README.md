@@ -1,13 +1,13 @@
 ## Introduction
 
-These files provide ESPHome/Home Assitant integration of Thermoworks' [Smoke® Remote BBQ Alarm Thermometer](https://www.thermoworks.com/smoke/). No Smoke® Gateway (Wi-Fi bridge) needed. No API needed. These are for direct (via nRF24) connection to the unit. I use this integration to get Smoke temperature data into Home Assistant.
+These files provide ESPHome/Home Assistant integration of Thermoworks' [Smoke® Remote BBQ Alarm Thermometer](https://www.thermoworks.com/smoke/). No Smoke® Gateway (Wi-Fi bridge) needed. No API needed. These provide  direct (via nRF24) connection to the Smoke® unit. 
 
 ### You will need:
 - nRF24L01 Transceiver Module
 - ESPHome capable microcontroller (e.g. ESP-12F D1, ESP8266, or ESP32)
 
 ### Steps:
-1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Wiring.png) is one example take from this [website](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957))
+1. Wire up nRF24L01 to microcontroller (there are plenty of tutorials out there, [here](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Wiring.png) is one example taken from this [website](https://projecthub.arduino.cc/tmekinyan/how-to-use-the-nrf24l01-module-with-arduino-813957))
 2. Create new ESPHome integration using provided [esp-smoke.yaml](esp-smoke.yaml) as a template. Here are the important parts:
 ```yaml
 external_components:
@@ -42,7 +42,7 @@ thermoworks_smoke:
     name: "Smoke Probe 2 Max Alarm"
 ```
 3. If you already know your Smoke's `radio_id` then great, you can skip the next step 
-4. To find your Smoke's `radio_id` keep that field commented out, which will put your ESP device into search mode. Make sure Smoke is powered on and is NOT in pairing mode. Keep an eye on ESP's logs. In less than 5 minutes you should see an ID that was found. Verify that found temperatures match what you see on your device.
+4. To find your Smoke's `radio_id` keep the field commented out, which will put your ESP device into search mode. Make sure Smoke is powered on and is NOT in pairing mode. Keep an eye on ESP's logs. In less than 5 minutes you should see an ID that was found. Verify that reported temperatures match with what you see on your device's screen.
 ![ID Found](https://github.com/stefslon/esphome-thermoworks-smoke/blob/main/imgs/Found.png)
     - If ID is not found in five minutes try uncommenting `alt_radio_id` field and re-running the process again
 5. Set `radio_id` field to your Smoke's ID and you are all set!
