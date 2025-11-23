@@ -47,7 +47,7 @@ CONFIG_SCHEMA = cv.Schema(
         sensor.sensor_schema(device_class="temperature",unit_of_measurement="°F",accuracy_decimals=1,state_class="measurement").extend(),       
         
 }
-).extend(cv.COMPONENT_SCHEMA).extend(cv.polling_component_schema('60s'))
+).extend(cv.COMPONENT_SCHEMA).extend(cv.polling_component_schema('5s'))
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])

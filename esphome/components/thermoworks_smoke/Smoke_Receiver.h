@@ -70,6 +70,7 @@ class SmokeReceiverComponent : public PollingComponent {
         uint64_t radio_id = 0;
         uint8_t rf_chan;
         uint8_t use_alt_id = 0;
+        uint32_t last_packet_time_;
       
     public:
     
