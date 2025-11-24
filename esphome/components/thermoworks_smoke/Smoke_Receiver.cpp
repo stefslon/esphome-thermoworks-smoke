@@ -104,10 +104,27 @@ void SmokeReceiverComponent::setup() {
 
     radio.startListening();
 
+    // Initialize packet timeout tracker
+    last_packet_time_ = millis();
+
     ESP_LOGCONFIG(TAG,"Setup executed, started listening...");
 }
 
 void SmokeReceiverComponent::update() {
+    // Check for packet timeout - mark sensors unavailable if no data received
+    const uint32_t TIMEOUT_MS = 60000;  // 60 seconds
+    if (millis() - last_packet_time_ > TIMEOUT_MS) {
+        // Mark all sensors as unavailable
+        if (probe1_temp != nullptr) probe1_temp->publish_state(NAN);
+        if (probe1_min != nullptr) probe1_min->publish_state(NAN);
+        if (probe1_max != nullptr) probe1_max->publish_state(NAN);
+        if (probe2_temp != nullptr) probe2_temp->publish_state(NAN);
+        if (probe2_min != nullptr) probe2_min->publish_state(NAN);
+        if (probe2_max != nullptr) probe2_max->publish_state(NAN);
+        ESP_LOGW(TAG, "No packets received for %d seconds, marking sensors unavailable", TIMEOUT_MS / 1000);
+        // Continue to check for packets - don't return early
+    }
+
     data_t packet;
     if (radio.available()) {
         uint8_t packetLen = radio.getPayloadSize();
@@ -168,6 +185,9 @@ void SmokeReceiverComponent::update() {
                 packetLen = SMOKE_PAYLOAD_SIZE;
 
             radio.read(&packet, packetLen);
+
+            // Update last packet time
+            last_packet_time_ = millis();
 
             float temp_scale = 0.1;
             float temp_offset = 0.0;
